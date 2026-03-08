@@ -12,6 +12,10 @@ from sklearn.decomposition import PCA
 from sklearn.linear_model import LogisticRegression
 from imblearn.over_sampling import SMOTE
 
+# Unified Ph.D. Utils
+sys.path.insert(0, str(Path(__file__).parent.parent))
+from shared_utils import compute_phd_metrics
+
 # Setup Standalone Paths
 SCRIPT_DIR = Path(__file__).parent.resolve()
 DATA_DIR = SCRIPT_DIR.parent.parent / "data"
@@ -84,13 +88,10 @@ def run_v4(smoke_test=False):
     # Eval
     test_meta_features = [m.predict_proba(X_test)[:, 1] for m in experts]
     X_meta_test = np.column_stack(test_meta_features)
+    y_prob_stack = meta_learner.predict_proba(X_meta_test)[:, 1]
     y_pred = meta_learner.predict(X_meta_test)
     
-    results = {
-        'ba': balanced_accuracy_score(y_test, y_pred),
-        'sens': recall_score(y_test, y_pred),
-        'spec': recall_score(y_test, y_pred, pos_label=0)
-    }
+    results = compute_phd_metrics(y_test, y_pred, y_prob_stack)
     
     with open(RESULTS_DIR / "results.json", 'w') as f: json.dump(results, f, indent=4)
     logger.info(f"V4 Results: {results}")
