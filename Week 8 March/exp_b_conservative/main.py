@@ -10,6 +10,10 @@ from sklearn.metrics import balanced_accuracy_score, recall_score
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.decomposition import PCA
 
+# Unified Ph.D. Utils
+sys.path.insert(0, str(Path(__file__).parent.parent))
+from shared_utils import compute_phd_metrics
+
 # Setup Standalone Paths
 SCRIPT_DIR = Path(__file__).parent.resolve()
 DATA_DIR = SCRIPT_DIR.parent.parent / "data"
@@ -68,13 +72,11 @@ def run_v3(smoke_test=False):
         
     # Average Probabilities
     y_prob_avg = np.mean(ensemble_probs, axis=0)
+    y_prob_std = np.std(ensemble_probs, axis=0) # Audited Variance
     y_pred = (y_prob_avg >= 0.5).astype(int)
     
-    results = {
-        'ba': balanced_accuracy_score(y_test, y_pred),
-        'sens': recall_score(y_test, y_pred),
-        'spec': recall_score(y_test, y_pred, pos_label=0)
-    }
+    results = compute_phd_metrics(y_test, y_pred, y_prob_avg)
+    results['prob_std_mean'] = float(np.mean(y_prob_std))
     
     with open(RESULTS_DIR / "results.json", 'w') as f: json.dump(results, f, indent=4)
     logger.info(f"V3 Results: {results}")
