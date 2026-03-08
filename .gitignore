@@ -1,0 +1,23 @@
+# Ultra-Strict PhD GitIgnore
+*
+!*/
+!*.py
+!*.md
+!*.txt
+!.gitignore
+!*.sh
+!*.yaml
+!*.yml
+
+# Exclude large nested dirs
+**/defaultExportDir/
+**/experiments/
+**/test/
+**/tutorial/
+**/data/
+**/results/
+**/models/
+**/__pycache__/
+**/.ipynb_checkpoints/
+**/.vscode/
+**/.antigravity/

@@ -1,0 +1,2 @@
+[console_scripts]
+exstracs-viz = exstracs_viz.cli:main
